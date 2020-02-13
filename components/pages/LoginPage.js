@@ -10,8 +10,9 @@ import {AppRegistry,
   ActivityIndicator,
   Alert,
   Image,
-  Dimensions
+  Dimensions,
 } from  'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const unlockImg = require('../images/unlock.png');
 const loginImg = require('../images/login.png');
@@ -40,6 +41,29 @@ export default class LoginPage extends React.Component {
     this.state = { isShowingLoader: false, username: '', password:'', isShowingWelcome: false };
 
 }
+
+
+
+UNSAFE_componentWillMount() {
+  (async ()=>{
+    console.log('here checking')
+    let userId = await AsyncStorage.getItem("userId");
+    console.log(userId);
+    console.log('here checking')
+    if(userId){
+      console.log('here')
+      //redirect to welcome
+      this.setState({isShowingWelcome:true});
+    }
+    else {
+      // on begining showing signup page
+      this.setState({isShowingWelcome:false});
+    }
+  })()
+}
+
+
+
 onPressLearnMore() {
 }
 
@@ -60,6 +84,22 @@ callSignin = async () => {
 
             if(dop.data.msg == 'success') {
 
+              console.log(this.state.username)
+
+              try{
+
+                 AsyncStorage.setItem(
+                  'userId', this.state.username
+                );
+
+                console.log('setting item');
+                console.log(await AsyncStorage.getItem("userId"));
+                console.log('setting item');
+              } catch(e) {
+                console.log('error in save')
+              }
+
+
                 LocalAuth.authenticate({
                     reason: 'This is a secure area, please authenticate yourself',
                     fallbackToPasscode: true,    // fallback to passcode on cancel
@@ -76,6 +116,7 @@ callSignin = async () => {
                     {cancelable: false},
                     );
                     this.setState({isShowingWelcome: true});
+
 
                 })
                 .catch(error => {
@@ -141,6 +182,7 @@ callSignin = async () => {
 }
 
 callSignout = () => {
+    AsyncStorage.clear();
     this.setState({isShowingWelcome: false});
 }
 

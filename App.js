@@ -45,9 +45,9 @@ export default class App extends React.Component {
 
     this.onPressLearnMore=this.onPressLearnMore.bind(this);
 }
-componentWillMount() {
+UNSAFE_componentWillMount() {
   // on begining showing signup page
-  this.setState({showSignupPage:true});
+  this.setState({showLoginPage:true});
 
 }
 onPressLearnMore() {
